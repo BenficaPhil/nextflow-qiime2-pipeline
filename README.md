@@ -37,9 +37,9 @@ nextflow run pipelines/qiime2_automated.nf
 ```
 
 ### Alpha and beta diversity
-After the pipeline completes, consult the alpha rarefaction curve and checking the number of samples that would be removed. Once you've decided on a sampling depth, simply ask the pipeline to resume and use the --sampling_depth flag.
+After the pipeline completes, consult the alpha rarefaction curve and checking the number of samples that would be removed. Once you've decided on a sampling depth, simply ask the pipeline to resume and add the --run-diversity and --sampling_depth flags. For example:
 ```
-nextflow run pipelines/qiime2_automated.nf --sampling_depth 10000 -resume
+nextflow run pipelines/qiime2_automated.nf --run_diversity --sampling_depth 10000 -resume
 ```
 
 ## Customizable parameters
@@ -61,6 +61,10 @@ These parameters can be changed by passing flags into the nextflow command:
     * Greengenes2
     * GTDB_r220
   * The pipeline automatically downloads the classifier in the background, saving you time!
+ * --analysis_group, default: Treatment
+  * This group is the metadata column input in PERMANOVA for beta diversity significance. Change if your metadata column of interest is not called Treatmnent.
+ * --picrust2_version, default: 2.6.1
+  * Can be changed if SCINet updates to a new version
 
 ### Example of a customized pipeline command
 ```
