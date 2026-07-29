@@ -61,9 +61,9 @@ These parameters can be changed by passing flags into the nextflow command:
     * Greengenes2
     * GTDB_r220
   * The pipeline automatically downloads the classifier in the background, saving you time!
- * --analysis_group, default: Treatment
+* --analysis_group, default: Treatment
   * This group is the metadata column input in PERMANOVA for beta diversity significance. Change if your metadata column of interest is not called Treatmnent.
- * --picrust2_version, default: 2.6.1
+* --picrust2_version, default: 2.6.1
   * Can be changed if SCINet updates to a new version
 
 ### Example of a customized pipeline command
