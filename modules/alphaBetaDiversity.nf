@@ -43,7 +43,7 @@ process AlphaBetaDiversity {
         --o-visualization alpha_diversity/shannon_significance.qzv
 
     qiime diversity alpha-group-significance \
-        --i-alpha-diversity observed_features_vector.qza \
+        --i-alpha-diversity diversity-core-metrics/observed_features_vector.qza \
         --m-metadata-file ${metadata} \
         --o-visualization alpha_diversity/observed_features_significance.qzv
 
