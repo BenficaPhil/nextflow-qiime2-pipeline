@@ -1,18 +1,18 @@
 # Nextflow QIIME 2 Pipeline for USDA-ARS ABBL
-Automates all QIIME 2 steps typically run in ABBL's 16S rRNA amplicon analysis protocol. Can run everything from data import to producing a rarefaction curve with 1 command and 3 folders (sequencing data, metadata, and the nextflow scripts).
+Automates all QIIME 2 steps typically run in ABBL's 16S rRNA amplicon analysis protocol. Can run everything from data import to producing a rarefaction curve with 1 command and 3 folders (sequencing data, metadata, and the nextflow scripts). A 2nd command completes your alpha and beta diversity analyses.
 
 The pipeline is designed to access the QIIME 2 installations on the USDA-ARS SCINet HPC.
 
 ## Steps the pipeline runs by default
 1. Generate a manifest file
 2. Imports paired-end sequencing data
-3. Trims primers with Cutadapt
+3. Trims V3-V4 primers with Cutadapt
 4. Finds what values to set as truncation parameters in DADA2 for a Q30 cutoff
 5. Runs denoising with DADA2
 6. Runs taxonomic classification using a SILVA 138.2 classifier weighted to animal proximal gut
 7. Filters the ASV table to remove mitochondria, chloroplasts, and Unasssigned
 8. Exports a genus-level feature table
-9. Produces a grouped table (e.g. if plotting combined samples for each Treatment group)
+9. Produces a grouped table QZA (e.g. if plotting combined samples for each Treatment group)
 10. Produces a phylogenetic tree for later diversity step
 11. Produces an alpha rarefaction curve
 12. Runs functional prediction with PICRUSt2
@@ -29,7 +29,7 @@ metadata
 pipelines
 ```
 
-Load Nextflow v25.04.6 and run!
+Load Nextflow v25.04.6 and run! (preferably on a compute node and not the login node)
 ```
 module load nextflow/25.04.6
 
@@ -72,9 +72,27 @@ nextflow run pipelines/qiime2_automated.nf --quality_cutoff 25 --tax_database SI
 ```
 
 ## Output structure
-Most of the useful outputs (the QZV files) will be placed in a folder called 03_visualizations.
+Most of the useful outputs (the QZV files) will be placed in a folder called 03_visualizations. Alpha and beta diversity outputs are placed in 10_diversity, with separate folders for alpha diversity, beta diversity, and the rarefied table.
 
-All outputs are made available in case you'd like to take QZA files and run other individual QIIME 2 commands. These will be in folders numbered in order of steps such as 02_import, 04_DADA2, 05_taxonomy, etc.
+All outputs are made available in case you'd like to take QZA files and run other individual QIIME 2 commands. The output folder list will look like this at the end of processing:
+```
+02_import
+03_visualizations
+04_DADA2
+05_taxonomy
+06_filtered
+07_genus_table
+08_grouped_table
+09_phylogeny
+10_diversity
+11_picrust2
+```
+
+## Local vs. slurm profile
+By default, your local resources are used (e.g. your current compute node if on SCINet). The -profile flag can be changed to slurm, which will submit each step as a Slurm job.
+```
+nextflow run pipelines/qiime2_automated.nf -profile slurm
+```
 
 ## Features in progress
 Currently, the ANCOM-BC2 part of pipeline is commented out, until that section is tested further.
