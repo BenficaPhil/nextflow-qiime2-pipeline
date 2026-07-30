@@ -9,7 +9,15 @@ include { GenusTable } from './modules/genusTable.nf'
 include { GroupedTable } from './modules/groupedTable.nf'
 include { PhylogeneticTree } from './modules/phylogeneticTree.nf'
 include { AlphaRarefaction } from './modules/rarefactionCurves.nf'
-include { AlphaBetaDiversity } from './modules/alphaBetaDiversity.nf'
+include { AlphaBetaDiversity_CoreMetrics } from './modules/coreDiversity.nf'
+include { AlphaDiversity_Shannon } from './modules/alphaShannon.nf'
+include { AlphaDiversity_ObservedFeatures } from './modules/alphaObservedFeatures.nf'
+include { AlphaDiversity_FaithPD } from './modules/alphaFaithPD.nf'
+include { AlphaDiversity_Evenness } from './modules/alphaEvenness.nf'
+include { BetaDiversity_WeightedUniFrac } from './modules/betaWeightedUniFrac.nf'
+include { BetaDiversity_UnweightedUniFrac } from './modules/betaUnweightedUniFrac.nf'
+include { BetaDiversity_BrayCurtis } from './modules/betaBrayCurtis.nf'
+include { BetaDiversity_Jaccard } from './modules/betaJaccard.nf'
 include { FunctionalPrediction_PICRUSt2 } from './modules/functionalPrediction.nf'
 //include { DifferentialAbundance_ANCOMBC2 } from './modules/differentialAbundance.nf'
 
@@ -71,13 +79,35 @@ workflow {
 
     AlphaRarefaction(ftable_ch, tree_ch, metadata_ch)
 
-    // Alpha and beta diversity (runs only when specified and sampling depth available)
-    AlphaBetaDiversity(ftable_ch, tree_ch, metadata_ch)
+    // Alpha and beta diversity core metrics results (runs only when --run_diversity is on and sampling depth available)
+    AlphaBetaDiversity_CoreMetrics(ftable_ch, tree_ch, metadata_ch)
+    
+    // Alpha diversity statistical significance with Kruskal-Wallis (runs only when --run_diversity is on)
+    shannon_ch = AlphaBetaDiversity_CoreMetrics.out.shannon
+    obs_fea_ch = AlphaBetaDiversity_CoreMetrics.out.obs_fea
+    faith_pd_ch = AlphaBetaDiversity_CoreMetrics.out.faith_pd
+    evenness_ch = AlphaBetaDiversity_CoreMetrics.out.evenness
+
+    AlphaDiversity_Shannon(shannon_ch, metadata_ch)
+    AlphaDiversity_ObservedFeatures(obs_fea_ch, metadata_ch)
+    AlphaDiversity_FaithPD(faith_pd_ch, metadata_ch)
+    AlphaDiversity_Evenness(evenness_ch, metadata_ch)
+
+    // Beta diversity statistical significance with PERMANOVA (runs only when --run_diversity is on)
+    w_unifrac_ch = AlphaBetaDiversity_CoreMetrics.out.w_unifrac
+    u_unifrac_ch = AlphaBetaDiversity_CoreMetrics.out.u_unifrac
+    bray_curtis_ch = AlphaBetaDiversity_CoreMetrics.out.bray_curtis
+    jaccard_ch = AlphaBetaDiversity_CoreMetrics.out.jaccard
+    
+    BetaDiversity_WeightedUniFrac(w_unifrac_ch, metadata_ch)
+    BetaDiversity_UnweightedUniFrac(u_unifrac_ch, metadata_ch)
+    BetaDiversity_BrayCurtis(bray_curtis_ch, metadata_ch)
+    BetaDiversity_Jaccard(jaccard_ch, metadata_ch)
 
     // Functional Prediction with PICRUSt2
     FunctionalPrediction_PICRUSt2(ftable_ch, repseqs_ch)
 
     // Differential Abundance with ANCOM-BC2
     // genus_ch = GenusTable.out.qza
-    //DifferentialAbundance_ANCOMBC2(ftable_ch, metadata_ch, taxonomy_ch, genus_ch)
+    // DifferentialAbundance_ANCOMBC2(ftable_ch, metadata_ch, taxonomy_ch, genus_ch)
 }
