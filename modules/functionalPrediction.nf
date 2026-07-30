@@ -1,5 +1,5 @@
 process FunctionalPrediction_PICRUSt2 {
-    publishDir params.output_picrust2, pattern: "./picrust2_output", mode: 'copy'
+    publishDir params.output_picrust2, pattern: "picrust2_output", mode: 'copy'
 
     input:
     path filtered_table
